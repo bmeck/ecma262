@@ -11065,7 +11065,7 @@
     <em>This section is non-normative.</em>
     <p>ECMAScript programs can be written in a style with very few semicolons by relying on automatic semicolon insertion. However, as described above, semicolons are not inserted at every newline, and some of these cases which do not have an automatically inserted semicolon can be counter-intuitive or confusing.</p>
 
-    <p>As such, consistently explicit semicolon use is recommended when relying on literal semicolons characters or ASI.</p>
+    <p>As new syntactic features are added to ECMAScript, additional cases requiring explicit semicolons emerge over time. As such, consistently explicit semicolon use is recommended when relying on literal semicolons characters or ASI.</p>
 
     <p>The term &ldquo;<dfn>automatic semicolon insertion hazard</dfn>&rdquo; refers, informally, to a place where a developer may expect a semicolon to be inserted, but according to the rules described above, it is not. The rest of this section describes a number of automatic semicolon insertion hazards in this version of ECMAScript.</p>
     <emu-clause id="sec-asi-hazards-in-statement-lists">

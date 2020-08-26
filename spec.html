@@ -23916,7 +23916,7 @@
                 String
               </td>
               <td>
-                The name under which the desired binding is exported by the module identified by [[ModuleRequest]]. The value *"\*"* indicates that the import request is for the target module's namespace object.
+                The name under which the desired binding is exported by the module identified by [[ModuleRequest]]. The value *~star~* indicates that the import request is for the target module's namespace object.
               </td>
             </tr>
             <tr>
@@ -23974,7 +23974,7 @@
                   *"mod"*
                 </td>
                 <td>
-                  *"\*"*
+                  *~star~*
                 </td>
                 <td>
                   *"ns"*
@@ -24065,7 +24065,7 @@
                 String | null
               </td>
               <td>
-                The name under which the desired binding is exported by the module identified by [[ModuleRequest]]. *null* if the |ExportDeclaration| does not have a |ModuleSpecifier|. *"\*"* indicates that the export request is for all exported bindings.
+                The name under which the desired binding is exported by the module identified by [[ModuleRequest]]. *null* if the |ExportDeclaration| does not have a |ModuleSpecifier|. *~star~* indicates that the export request is for all exported bindings.
               </td>
             </tr>
             <tr>
@@ -24251,7 +24251,7 @@
                   *"mod"*
                 </td>
                 <td>
-                  *"\*"*
+                  *~star~*
                 </td>
                 <td>
                   *null*
@@ -24268,7 +24268,7 @@
                   *"mod"*
                 </td>
                 <td>
-                  *"\*"*
+                  *~star~*
                 </td>
                 <td>
                   *null*
@@ -24300,13 +24300,13 @@
                   1. Append _ee_ to _localExportEntries_.
                 1. Else,
                   1. Let _ie_ be the element of _importEntries_ whose [[LocalName]] is the same as _ee_.[[LocalName]].
-                  1. If _ie_.[[ImportName]] is *"\*"*, then
+                  1. If _ie_.[[ImportName]] is *~star~*, then
                     1. NOTE: This is a re-export of an imported module namespace object.
                     1. Append _ee_ to _localExportEntries_.
                   1. Else,
                     1. NOTE: This is a re-export of a single name.
                     1. Append the ExportEntry Record { [[ModuleRequest]]: _ie_.[[ModuleRequest]], [[ImportName]]: _ie_.[[ImportName]], [[LocalName]]: *null*, [[ExportName]]: _ee_.[[ExportName]] } to _indirectExportEntries_.
-              1. Else if _ee_.[[ImportName]] is *"\*"* and _ee_.[[ExportName]] is *null*, then
+              1. Else if _ee_.[[ImportName]] is *~star~* and _ee_.[[ExportName]] is *null*, then
                 1. Append _ee_ to _starExportEntries_.
               1. Else,
                 1. Append _ee_ to _indirectExportEntries_.
@@ -24373,7 +24373,7 @@
             1. For each ExportEntry Record _e_ in _module_.[[IndirectExportEntries]], do
               1. If SameValue(_exportName_, _e_.[[ExportName]]) is *true*, then
                 1. Let _importedModule_ be ? HostResolveImportedModule(_module_, _e_.[[ModuleRequest]]).
-                1. If _e_.[[ImportName]] is *"\*"*, then
+                1. If _e_.[[ImportName]] is *~star~*, then
                   1. Assert: _module_ does not provide the direct binding for this export.
                   1. Return ResolvedBinding Record { [[Module]]: _importedModule_, [[BindingName]]: ~namespace~ }.
                 1. Else,
@@ -24417,7 +24417,7 @@
             1. For each ImportEntry Record _in_ in _module_.[[ImportEntries]], do
               1. Let _importedModule_ be ! HostResolveImportedModule(_module_, _in_.[[ModuleRequest]]).
               1. NOTE: The above call cannot fail because imported module requests are a subset of _module_.[[RequestedModules]], and these have been resolved earlier in this algorithm.
-              1. If _in_.[[ImportName]] is *"\*"*, then
+              1. If _in_.[[ImportName]] is *~star~*, then
                 1. Let _namespace_ be ? GetModuleNamespace(_importedModule_).
                 1. Perform ! _env_.CreateImmutableBinding(_in_.[[LocalName]], *true*).
                 1. Call _env_.InitializeBinding(_in_.[[LocalName]], _namespace_).
@@ -24757,7 +24757,7 @@
         <emu-grammar>NameSpaceImport : `*` `as` ImportedBinding</emu-grammar>
         <emu-alg>
           1. Let _localName_ be the StringValue of |ImportedBinding|.
-          1. Let _entry_ be the ImportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *"\*"*, [[LocalName]]: _localName_ }.
+          1. Let _entry_ be the ImportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *~star~*, [[LocalName]]: _localName_ }.
           1. Return a new List containing _entry_.
         </emu-alg>
         <emu-grammar>NamedImports : `{` `}`</emu-grammar>
@@ -25062,19 +25062,19 @@
         <p>With parameter _module_.</p>
         <emu-grammar>ExportFromClause : `*`</emu-grammar>
         <emu-alg>
-          1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *"\*"*, [[LocalName]]: *null*, [[ExportName]]: *null* }.
+          1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *~star~*, [[LocalName]]: *null*, [[ExportName]]: *null* }.
           1. Return a new List containing _entry_.
         </emu-alg>
         <emu-grammar>ExportFromClause : `*` `as` IdentifierName</emu-grammar>
         <emu-alg>
           1. Let _exportName_ be the StringValue of |IdentifierName|.
-          1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *"\*"*, [[LocalName]]: *null*, [[ExportName]]: _exportName_ }.
+          1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *~star~*, [[LocalName]]: *null*, [[ExportName]]: _exportName_ }.
           1. Return a new List containing _entry_.
         </emu-alg>
         <emu-grammar>ExportFromClause : `*` `as` ModuleExportName</emu-grammar>
         <emu-alg>
           1. Let _exportName_ be the StringValue of |ModuleExportName|.
-          1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *"\*"*, [[LocalName]]: *null*, [[ExportName]]: _exportName_ }.
+          1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *~star~*, [[LocalName]]: *null*, [[ExportName]]: _exportName_ }.
           1. Return a new List containing _entry_.
         </emu-alg>
         <emu-grammar>NamedExports : `{` `}`</emu-grammar>

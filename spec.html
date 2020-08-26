@@ -5646,11 +5646,12 @@
       <emu-alg>
         1. Let _strLen_ be the number of code units in string.
         1. Let _k_ be 0.
-        1. Repeat,
+        1. Repeat, while _k_ does not equal _strLen_,
           1. If _k_ equals _strLen_, return *true*.
           1. Let _cp_ be ! CodePointAt(_string_, _k_).
           1. If _cp_.[[IsUnpairedSurrogate]] is *true*, return *false*.
           1. Set _k_ to _k_ + _cp_.[[CodeUnitCount]].
+        1. Return *true*.
       </emu-alg>
     </emu-clause>
 

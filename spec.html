@@ -5638,6 +5638,23 @@
       </emu-note>
     </emu-clause>
 
+    <emu-clause id="sec-isstringvalidunicode" aoid="IsStringValidUnicode">
+      <h1>Static Semantics: IsStringValidUnicode ( _string_ )</h1>
+      <p>
+        The abstract operation IsStringValidUnicode takes an argument _string_ ( a String ). It interprets _string_ as a sequence of UTF-16 encoded code points, as described in <emu-xref href="#sec-ecmascript-language-types-string-type"></emu-xref>, and returns if it is a complete valid UTF-16 sequence. It performs the following steps when called:
+      </p>
+      <emu-alg>
+        1. Let _strLen_ be the number of code units in string.
+        1. Let _k_ be 0.
+        1. Repeat,
+          1. If _k_ equals _strLen_, return.
+          1. Let _cp_ be ! CodePointAt(_string_, _k_).
+          1. If _cp_.[[IsUnpairedSurrogate]] is *true*, return *false*.
+          1. Set _k_ to _k_ + _cp_.[[CodeUnitCount]].
+        1. Return *true*.
+      </emu-alg>
+    </emu-clause>
+
     <emu-clause id="sec-samevalue" aoid="SameValue">
       <h1>SameValue ( _x_, _y_ )</h1>
       <p>The abstract operation SameValue takes arguments _x_ (an ECMAScript language value) and _y_ (an ECMAScript language value) and returns a completion record whose [[Type]] is ~normal~ and whose [[Value]] is a Boolean. It performs the following steps when called:</p>
@@ -23023,6 +23040,9 @@
         ImportDeclaration
         ExportDeclaration
         StatementListItem[~Yield, ~Await, ~Return]
+
+      ModuleExportName:
+        StringLiteral
     </emu-grammar>
 
     <emu-clause id="sec-module-semantics">
@@ -23063,6 +23083,12 @@
         <emu-note>
           <p>The duplicate ExportedNames rule implies that multiple `export default` |ExportDeclaration| items within a |ModuleBody| is a Syntax Error. Additional error conditions relating to conflicting or duplicate declarations are checked during module linking prior to evaluation of a |Module|. If any such errors are detected the |Module| is not evaluated.</p>
         </emu-note>
+
+        <h1>Static Semantics: Early Errors</h1>
+        <emu-grammar>ModuleExportName : StringLiteral</emu-grammar>
+        <ul>
+          <li>It is a Syntax Error if IsStringValidUnicode(StringLiteral) is *false*.</li>
+        </ul>
       </emu-clause>
 
       <emu-clause id="sec-module-semantics-static-semantics-containsduplicatelabels">
@@ -24631,6 +24657,7 @@
         ImportSpecifier :
           ImportedBinding
           IdentifierName `as` ImportedBinding
+          ModuleExportName `as` ImportedBinding
 
         ModuleSpecifier :
           StringLiteral
@@ -24683,6 +24710,10 @@
           1. Return _names_.
         </emu-alg>
         <emu-grammar>ImportSpecifier : IdentifierName `as` ImportedBinding</emu-grammar>
+        <emu-alg>
+          1. Return the BoundNames of |ImportedBinding|.
+        </emu-alg>
+        <emu-grammar>ImportSpecifier : ModuleExportName `as` ImportedBinding</emu-grammar>
         <emu-alg>
           1. Return the BoundNames of |ImportedBinding|.
         </emu-alg>
@@ -24752,6 +24783,13 @@
           1. Let _entry_ be the ImportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: _importName_, [[LocalName]]: _localName_ }.
           1. Return a new List containing _entry_.
         </emu-alg>
+        <emu-grammar>ImportSpecifier : ModuleExportName `as` ImportedBinding</emu-grammar>
+        <emu-alg>
+          1. Let _importName_ be the StringValue of |ModuleExportName|.
+          1. Let _localName_ be the StringValue of |ImportedBinding|.
+          1. Let _entry_ be the ImportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: _importName_, [[LocalName]]: _localName_ }.
+          1. Return a new List containing _entry_.
+        </emu-alg>
       </emu-clause>
 
       <emu-clause id="sec-imports-static-semantics-modulerequests">
@@ -24783,7 +24821,7 @@
 
         ExportFromClause :
           `*`
-          `*` `as` IdentifierName
+          `*` `as` ExportSpecifier
           NamedExports
 
         NamedExports :
@@ -24798,6 +24836,7 @@
         ExportSpecifier :
           IdentifierName
           IdentifierName `as` IdentifierName
+          IdentifierName `as` ModuleExportName
       </emu-grammar>
 
       <emu-clause id="sec-exports-static-semantics-early-errors">
@@ -24913,9 +24952,9 @@
         <emu-alg>
           1. Return a new empty List.
         </emu-alg>
-        <emu-grammar>ExportFromClause : `*` `as` IdentifierName</emu-grammar>
+        <emu-grammar>ExportFromClause : `*` `as` ExportSpecifier</emu-grammar>
         <emu-alg>
-          1. Return a List containing the StringValue of |IdentifierName|.
+          1. Return the ExportedNames of |ExportSpecifier|.
         </emu-alg>
         <emu-grammar>ExportFromClause : NamedExports</emu-grammar>
         <emu-alg>
@@ -24956,6 +24995,10 @@
         <emu-grammar>ExportSpecifier : IdentifierName `as` IdentifierName</emu-grammar>
         <emu-alg>
           1. Return a List containing the StringValue of the second |IdentifierName|.
+        </emu-alg>
+        <emu-grammar>ExportSpecifier : IdentifierName `as` ModuleExportName</emu-grammar>
+        <emu-alg>
+          1. Return a List containing the StringValue of ModuleExportName.
         </emu-alg>
       </emu-clause>
 
@@ -25017,9 +25060,9 @@
           1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *"\*"*, [[LocalName]]: *null*, [[ExportName]]: *null* }.
           1. Return a new List containing _entry_.
         </emu-alg>
-        <emu-grammar>ExportFromClause : `*` `as` IdentifierName</emu-grammar>
+        <emu-grammar>ExportFromClause : `*` `as` ExportSpecifier</emu-grammar>
         <emu-alg>
-          1. Let _exportName_ be the StringValue of |IdentifierName|.
+          1. Let _exportName_ be the StringValue of |ExportSpecifier|.
           1. Let _entry_ be the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: *"\*"*, [[LocalName]]: *null*, [[ExportName]]: _exportName_ }.
           1. Return a new List containing _entry_.
         </emu-alg>
@@ -25048,6 +25091,18 @@
         <emu-alg>
           1. Let _sourceName_ be the StringValue of the first |IdentifierName|.
           1. Let _exportName_ be the StringValue of the second |IdentifierName|.
+          1. If _module_ is *null*, then
+            1. Let _localName_ be _sourceName_.
+            1. Let _importName_ be *null*.
+          1. Else,
+            1. Let _localName_ be *null*.
+            1. Let _importName_ be _sourceName_.
+          1. Return a new List containing the ExportEntry Record { [[ModuleRequest]]: _module_, [[ImportName]]: _importName_, [[LocalName]]: _localName_, [[ExportName]]: _exportName_ }.
+        </emu-alg>
+        <emu-grammar>ExportSpecifier : IdentifierName `as` ModuleExportName</emu-grammar>
+        <emu-alg>
+          1. Let _sourceName_ be the StringValue of |IdentifierName|.
+          1. Let _exportName_ be the StringValue of |ModuleExportName|.
           1. If _module_ is *null*, then
             1. Let _localName_ be _sourceName_.
             1. Let _importName_ be *null*.

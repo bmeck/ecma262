@@ -5647,7 +5647,7 @@
         1. Let _strLen_ be the number of code units in string.
         1. Let _k_ be 0.
         1. Repeat,
-          1. If _k_ equals _strLen_, return.
+          1. If _k_ equals _strLen_, return .
           1. Let _cp_ be ! CodePointAt(_string_, _k_).
           1. If _cp_.[[IsUnpairedSurrogate]] is *true*, return *false*.
           1. Set _k_ to _k_ + _cp_.[[CodeUnitCount]].
@@ -24821,7 +24821,8 @@
 
         ExportFromClause :
           `*`
-          `*` `as` ExportSpecifier
+          `*` `as` IdentifierName
+          `*` `as` ModuleExportName
           NamedExports
 
         NamedExports :
@@ -24952,9 +24953,13 @@
         <emu-alg>
           1. Return a new empty List.
         </emu-alg>
-        <emu-grammar>ExportFromClause : `*` `as` ExportSpecifier</emu-grammar>
+        <emu-grammar>ExportFromClause : `*` `as` IdentifierName/emu-grammar>
         <emu-alg>
-          1. Return the ExportedNames of |ExportSpecifier|.
+          1. Return the ExportedNames of |IdentifierName|.
+        </emu-alg>
+        <emu-grammar>ExportFromClause : `*` `as` ModuleExportName</emu-grammar>
+        <emu-alg>
+          1. Return a List containing the StringValue of ModuleExportName.
         </emu-alg>
         <emu-grammar>ExportFromClause : NamedExports</emu-grammar>
         <emu-alg>

@@ -24811,7 +24811,7 @@
       <emu-grammar type="definition">
         ExportDeclaration :
           `export` ExportFromClause FromClause `;`
-          `export` NamedExports `;`
+          `export` NamedExports[~From] `;`
           `export` VariableStatement[~Yield, ~Await]
           `export` Declaration[~Yield, ~Await]
           `export` `default` HoistableDeclaration[~Yield, ~Await, +Default]
@@ -24941,11 +24941,11 @@
         <emu-alg>
           1. Return a List containing the StringValue of the first |IdentifierName|.
         </emu-alg>
-        <emu-grammar>ExportSpecifier : [+From] ModuleExportName `as` ModuleExportName</emu-grammar>
+        <emu-grammar>ExportSpecifier : ModuleExportName `as` ModuleExportName</emu-grammar>
         <emu-alg>
           1. Return a List containing the StringValue of the first |ModuleExportName|.
         </emu-alg>
-        <emu-grammar>ExportSpecifier : [+From] ModuleExportName</emu-grammar>
+        <emu-grammar>ExportSpecifier : ModuleExportName</emu-grammar>
         <emu-alg>
           1. Return a List containing the StringValue of |ModuleExportName|.
         </emu-alg>

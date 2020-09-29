@@ -25247,7 +25247,10 @@
         <emu-alg>
           1. Return a List containing the first |IdentifierName|.
         </emu-alg>
-        <emu-grammar>ExportSpecifier : ModuleExportName `as` ModuleExportName</emu-grammar>
+        <emu-grammar>
+          ExportSpecifier :
+            ModuleExportName
+            ModuleExportName `as` ModuleExportName</emu-grammar>
         <emu-alg>
           1. Return a new empty List.
         </emu-alg>
